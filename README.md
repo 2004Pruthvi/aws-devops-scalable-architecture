@@ -29,3 +29,17 @@ Users → ALB → Target Group → Auto Scaling Group → EC2 → EBS
 - Hands-on experience with AWS infrastructure
 - Understanding of scalable architecture design
 - Real-world DevOps practices implementation
+images\'Screenshot 2026-03-24 121729.png'
+images\'Screenshot 2026-03-27 162515.png'
+images\'Screenshot 2026-03-27 162535.png'
+images\'Screenshot 2026-03-27 162550.png'
+images\'Screenshot 2026-03-27 162603.png'
+images\'Screenshot 2026-03-27 162624.png'
+images\'Screenshot 2026-03-27 162636.png'
+images\'Screenshot 2026-03-27 162649.png'
+images\'Screenshot 2026-03-27 162701.png'
+images\'Screenshot 2026-03-27 162716.png'
+images\'Screenshot 2026-03-27 162725.png'
+images\'Screenshot 2026-03-27 162739.png'
+images\'Screenshot 2026-03-27 163829.png'
+images\'Screenshot 2026-03-27 163844.png'
