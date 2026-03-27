@@ -23,7 +23,7 @@ Users → ALB → Target Group → Auto Scaling Group → EC2 → EBS
 - Backup strategy using snapshots
 
  📸 Screenshots
-
+./images
 
 🧠 Learning Outcome
 - Hands-on experience with AWS infrastructure
