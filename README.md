@@ -1,89 +1,105 @@
-AWS Scalable Web Architecture (DevOps Project)
+# AWS Scalable & Highly Available Web Architecture
 
-Overview
+<p align="center">
+  <img src="https://img.shields.io/badge/AWS-EC2_%7C_ALB_%7C_ASG_%7C_VPC-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white" alt="AWS" />
+  <img src="https://img.shields.io/badge/High_Availability-Multi--AZ-0073BB?style=for-the-badge&logo=amazonaws&logoColor=white" alt="Multi-AZ" />
+  <img src="https://img.shields.io/badge/Elastic_Scaling-Dynamic_Policies-43B02A?style=for-the-badge&logo=grafana&logoColor=white" alt="Auto Scaling" />
+  <img src="https://img.shields.io/badge/Monitoring-CloudWatch-FF4F00?style=for-the-badge&logo=amazoncloudwatch&logoColor=white" alt="CloudWatch" />
+</p>
 
-This project demonstrates a production-ready scalable web infrastructure built using AWS services.
-It is designed to handle dynamic traffic using load balancing and automatic scaling while ensuring high availability and fault tolerance.
+---
 
-Architecture
+## 📌 Project Overview
 
-Users → ALB → Target Group → Auto Scaling Group → EC2 → EBS
+This project implements a production-grade, fault-tolerant, and dynamically scalable cloud infrastructure on **Amazon Web Services (AWS)**. It demonstrates how to decouple incoming user traffic from backend compute instances using an **Application Load Balancer (ALB)** and maintain seamless availability across multiple availability zones using **Auto Scaling Groups (ASG)**.
 
-Architecture Diagram
+The architecture is designed to withstand traffic spikes, eliminate single points of failure (SPOF), and automatically replace unhealthy compute instances without service interruption.
 
-![Architecture](images/Screenshot 2026-03-24 121729.png)
+---
 
-AWS Services Used
+## 🏛️ High-Availability Architecture
 
-- Amazon EC2 – Compute instances to host the application
-- Amazon EBS – Persistent storage for instances
-- Amazon Machine Image – Pre-configured templates for EC2
-- Launch Template – Defines instance configuration
-- Auto Scaling – Automatically adjusts number of instances
-- Elastic Load Balancing – Distributes traffic
-- Target Groups – Routes traffic to healthy instances
+```mermaid
+flowchart TD
+    Users((Internet Users)) -->|HTTP Traffic Port 80| ALB[Application Load Balancer<br/>Multi-AZ Public Subnets]
+    
+    subgraph VPC ["AWS Virtual Private Cloud (VPC)"]
+        subgraph Target_Group ["ALB Target Group (Health Check: HTTP /)"]
+            ALB -->|Route Healthy Traffic| AZ1
+            ALB -->|Route Healthy Traffic| AZ2
+        end
 
-Features
+        subgraph ASG ["Auto Scaling Group (Min: 1, Desired: 2, Max: 4)"]
+            subgraph AZ1 ["Availability Zone 1 (ap-south-1a)"]
+                EC2_1["EC2 Instance 1<br/>t3.micro (Web Tier)"]
+            end
+            
+            subgraph AZ2 ["Availability Zone 2 (ap-south-1b)"]
+                EC2_2["EC2 Instance 2<br/>t3.micro (Web Tier)"]
+            end
+        end
 
-- ✅ Automated server setup using User Data scripts
-- ✅ Dynamic scaling based on CPU utilization
-- ✅ Load balancing across multiple EC2 instances
-- ✅ Persistent storage using EBS
-- ✅ Backup strategy using snapshots
+        CW["Amazon CloudWatch<br/>CPU Utilization Metric"] -->|Trigger Alarm (>70%)| ScalingPolicy["ASG Scaling Policy<br/>Scale-Out / Scale-In"]
+        ScalingPolicy -.->|Adjust Desired Capacity| ASG
+    end
+```
 
+---
 
-📸 Screenshots
+## ⚙️ Core Infrastructure Components
 
-🔹 EC2 Setup
+### 1. Application Load Balancer (ALB)
+* **Traffic Ingress:** Distributes incoming HTTP requests uniformly across compute targets in separate availability zones.
+* **Target Health Checks:** Continuously polls target endpoints on port 80; automatically drains and detaches failing instances within 30 seconds.
+* **Security Group:** Ingress open on port 80/443; egress constrained to target EC2 security groups.
 
-![EC2](images/Screenshot 2026-03-27 162515.png)
+### 2. Auto Scaling Group (ASG) & Launch Templates
+* **Launch Template:** Standardized AMI, instance type (`t3.micro`), IAM role, user-data bootstrap script, and security group.
+* **Capacity Management:**
+  * **Minimum Capacity:** `1` (ensures minimum baseline presence)
+  * **Desired Capacity:** `2` (guarantees cross-AZ redundancy during standard load)
+  * **Maximum Capacity:** `4` (absorbs sudden high-volume bursts)
+* **Scaling Policies:** Dynamic target tracking based on average CPU utilization threshold (`> 70%`).
 
-🔹 Load Balancer Configuration
+### 3. Monitoring & Auto-Healing
+* **CloudWatch Telemetry:** Real-time metrics tracking CPU utilization, network I/O, and HTTP 5xx error rates.
+* **Automated Replacement:** If an EC2 instance fails an ALB health check or encounters hardware degradation, the ASG automatically terminates the faulty instance and provisions a fresh replacement from the launch template.
 
-![ALB](images/Screenshot 2026-03-27 162535.png)
+---
 
-🔹 Target Group
+## 📸 Implementation & Verification Evidence
 
-![Target Group](images/Screenshot 2026-03-27 162550.png)
+### 1. Load Balancer Configuration
+![Application Load Balancer](images/Screenshot%202026-03-27%20162535.png)
 
-🔹 Auto Scaling Group
+### 2. Target Group & Health Probes
+![Target Group](images/Screenshot%202026-03-27%20162550.png)
 
-![ASG](images/Screenshot 2026-03-27 162603.png)
+### 3. Auto Scaling Group Specification
+![Auto Scaling Group](images/Screenshot%202026-03-27%20162603.png)
 
-🔹 Scaling Activity
+### 4. Dynamic Scaling Activity History
+![Scaling Activity](images/Screenshot%202026-03-27%20162624.png)
 
-![Scaling](images/Screenshot 2026-03-27 162624.png)
+### 5. CloudWatch Metrics & Instance Telemetry
+![CloudWatch Monitoring](images/Screenshot%202026-03-27%20162636.png)
 
-🔹 Instance Monitoring
+### 6. Security Group & Subnet Networking
+![Configurations](images/Screenshot%202026-03-27%20162649.png)
 
-![Monitoring](images/Screenshot 2026-03-27 162636.png)
+---
 
-🔹 Additional Configurations
+## 💡 Key Engineering Takeaways
 
-![Config](images/Screenshot 2026-03-27 162649.png)
+* **Decoupled Architecture:** Using an Application Load Balancer shields compute instances from direct internet exposure and facilitates seamless rolling deployments.
+* **Resilience Testing:** Simulating high CPU workloads triggered CloudWatch alarms and validated that scale-out activities executed without packet drops.
+* **Cost vs Availability Balance:** Utilizing `t3.micro` instances with aggressive scale-in policies provides high availability within free-tier cost boundaries.
 
-Learning Outcomes
+---
 
-- Gained hands-on experience with AWS infrastructure
-- Understood scalable and highly available architecture design
-- Implemented real-world DevOps practices
-- Learned how to manage traffic using load balancers and scaling
+## 🔮 Future Enhancements
 
-Project Outcome
-
-- Built a fault-tolerant system
-- Achieved high availability using multiple EC2 instances
-- Improved performance using load balancing
-- Enabled automatic scaling based on demand
-
-Future Improvements
-
-- Add CI/CD pipeline (GitHub Actions / AWS CodePipeline)
-- Use Docker for containerization
-- Implement monitoring with CloudWatch alerts
-- Add HTTPS using SSL/TLS
-
-Author
-
-Pruthvi Raj D S
-GitHub: https://github.com/2004Pruthvi
+- [ ] Codify the entire infrastructure into reusable Terraform modules.
+- [ ] Implement HTTPS / TLS certificate termination using AWS Certificate Manager (ACM).
+- [ ] Integrate AWS WAF (Web Application Firewall) to protect against common OWASP vulnerabilities.
+- [ ] Add an automated stress-testing workflow using Locust or Apache JMeter.
