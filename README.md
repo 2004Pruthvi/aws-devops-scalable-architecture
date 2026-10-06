@@ -9,7 +9,7 @@
 
 ---
 
-## 📌 Project Overview
+## Project Overview
 
 This project implements a production-grade, fault-tolerant, and dynamically scalable cloud infrastructure on **Amazon Web Services (AWS)**. It demonstrates how to decouple incoming user traffic from backend compute instances using an **Application Load Balancer (ALB)** and maintain seamless availability across multiple availability zones using **Auto Scaling Groups (ASG)**.
 
@@ -17,7 +17,7 @@ The architecture is designed to withstand traffic spikes, eliminate single point
 
 ---
 
-## 🏛️ High-Availability Architecture
+## High-Availability Architecture
 
 ```mermaid
 flowchart TD
@@ -46,7 +46,7 @@ flowchart TD
 
 ---
 
-## ⚙️ Core Infrastructure Components
+## Core Infrastructure Components
 
 ### 1. Application Load Balancer (ALB)
 * **Traffic Ingress:** Distributes incoming HTTP requests uniformly across compute targets in separate availability zones.
@@ -67,7 +67,7 @@ flowchart TD
 
 ---
 
-## 📸 Implementation & Verification Evidence
+## Implementation & Verification Evidence
 
 ### 1. Load Balancer Configuration
 ![Application Load Balancer](images/Screenshot%202026-03-27%20162535.png)
@@ -89,7 +89,7 @@ flowchart TD
 
 ---
 
-## 💡 Key Engineering Takeaways
+## Key Engineering Takeaways
 
 * **Decoupled Architecture:** Using an Application Load Balancer shields compute instances from direct internet exposure and facilitates seamless rolling deployments.
 * **Resilience Testing:** Simulating high CPU workloads triggered CloudWatch alarms and validated that scale-out activities executed without packet drops.
@@ -97,7 +97,7 @@ flowchart TD
 
 ---
 
-## 🔮 Future Enhancements
+## Future Enhancements
 
 - [ ] Codify the entire infrastructure into reusable Terraform modules.
 - [ ] Implement HTTPS / TLS certificate termination using AWS Certificate Manager (ACM).
